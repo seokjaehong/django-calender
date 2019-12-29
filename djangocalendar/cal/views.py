@@ -1,24 +1,6 @@
-from django.shortcuts import render
-
-# Create your views here.
-
-
-# cal/views.py
-
-from django.shortcuts import render
-from django.http import HttpResponse
-
-
-# Create your views here.
-
-def index(request):
-    return HttpResponse('hello')
-
-
-# cal/views.py
-
 from datetime import datetime, date
-from django.shortcuts import render
+
+from django.db.models import Sum
 from django.http import HttpResponse
 from django.views import generic
 from django.utils.safestring import mark_safe
@@ -27,9 +9,17 @@ from .models import *
 from .utils import Calendar
 
 
+def index(request):
+    return HttpResponse('hello')
+
+
 class CalendarView(generic.ListView):
     model = Event
     template_name = 'calendar.html'
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.aggregate(spend_sum=Sum('budget'))['spend_sum']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -42,7 +32,10 @@ class CalendarView(generic.ListView):
 
         # Call the formatmonth method, which returns our calendar as a table
         html_cal = cal.formatmonth(withyear=True)
+
         context['calendar'] = mark_safe(html_cal)
+        spend_sum = self.get_queryset()
+        context['spend_sum'] = spend_sum
         return context
 
 
