@@ -21,8 +21,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 secret_file = os.path.join(BASE_DIR, 'secrets.json')  # secrets.json 파일 위치를 명시
-TEMPLATES_DIR = os.path.join(BASE_DIR, 'cal/templates/')
-
+TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates/')
 STATIC_URL = os.path.join(BASE_DIR, 'static/')
 
 STATICFILES_DIRS = [
