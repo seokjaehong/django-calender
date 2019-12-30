@@ -3,6 +3,12 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>이번달 예상지출금액 : {{ spend_sum }}</h1>
-{{ calendar }}
+    <h1>이번달 예상지출금액 : {{ spend_sum }}</h1>
+
+    <div class="clearfix">
+        <a class="btn btn-info left" href="{% url 'cal:calendar' %}?{{ prev_month }}"> Previous Month </a>
+        <a class="btn btn-info right" href="{% url 'cal:calendar' %}?{{ next_month }}"> Next Month </a>
+    </div>
+
+    {{ calendar }}
 {% endblock %}
