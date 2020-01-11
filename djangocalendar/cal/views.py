@@ -3,16 +3,32 @@ from datetime import datetime, date, timedelta
 
 from django.db.models import Sum
 from django.db.models.functions import Coalesce
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
 from django.views import generic
 from django.utils.safestring import mark_safe
 
+from .forms import EventForm
 from .models import *
 from .utils import Calendar
 
 
 def index(request):
     return HttpResponse('hello')
+
+
+def event(request, event_id=None):
+    if event_id:
+        instance = get_object_or_404(Event, pk=event_id)
+    else:
+        instance = Event()
+
+    form = EventForm(request.POST or None, instance=instance)
+    if request.POST and form.is_valid():
+        form.save()
+        return HttpResponseRedirect(reverse('cal:calendar'))
+    return render(request, 'event.html', {'form': form})
 
 
 class CalendarView(generic.ListView):
@@ -37,8 +53,10 @@ class CalendarView(generic.ListView):
     def get_queryset(self):
         qs = super().get_queryset()
         d = get_date(self.request.GET.get('month', None))
-        spend_sum = qs.filter(start_time__year=d.year, start_time__month=d.month).aggregate(spend_sum=Coalesce(Sum('budget'), 0))[
-            'spend_sum']
+        spend_sum = \
+            qs.filter(start_time__year=d.year, start_time__month=d.month).aggregate(
+                spend_sum=Coalesce(Sum('budget'), 0))[
+                'spend_sum']
         return spend_sum
 
     def get_context_data(self, **kwargs):
