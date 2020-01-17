@@ -63,8 +63,8 @@ class CalendarView(generic.ListView):
         context = super().get_context_data(**kwargs)
 
         d = get_date(self.request.GET.get('month', None))
-        cal = Calendar(d.year, d.month)
 
+        cal = Calendar(d.year, d.month)
         context['prev_month'] = self.prev_month(d)
         context['next_month'] = self.next_month(d)
 
